@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "../styles/AudioPlayer.module.css";
-import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
 import { FaPlay, FaPause } from "react-icons/fa";
+import { Grid, Divider, Card, CardMedia, Paper, Box } from "@material-ui/core";
+import Forward30Icon from "@material-ui/icons/Forward30";
+import useStyles from "./audioPlayerStyles";
 
 const calculateTime = (secsDouble) => {
   const totalSeconds = Math.floor(secsDouble);
@@ -14,6 +16,7 @@ const calculateTime = (secsDouble) => {
     .padStart(2, 0)}:${seconds.toString().padStart(2, 0)}`;
 };
 const AudioPlayer = () => {
+  const classes = useStyles();
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -23,8 +26,10 @@ const AudioPlayer = () => {
 
   useEffect(() => {
     const durationSecs = audioPlayerRef.current.duration;
+    console.log(durationSecs);
     setDuration(durationSecs);
     progressBarRef.current.max = durationSecs;
+    console.log(progressBarRef.current.max);
   }, [audioPlayerRef?.current?.loadedmetadata]);
 
   const audioFile =
@@ -36,6 +41,7 @@ const AudioPlayer = () => {
     animationRef.current = requestAnimationFrame(whilePlaying);
     console.log("time", audioPlayerRef.current.currentTime);
     if (audioPlayerRef.current.currentTime >= duration - 0.001) {
+      knobMoved();
       cancelAnimationFrame(animationRef.current);
       audioPlayerRef.current.pause();
       setIsPlaying(false);
@@ -53,10 +59,11 @@ const AudioPlayer = () => {
   };
 
   const skipSeconds = (seconds) => {
+    console.log(seconds);
     progressBarRef.current.value = Number(
       progressBarRef.current.value + seconds
     );
-    knobMoved();
+    console.log(progressBarRef.current.value);
   };
 
   const togglePlayPause = () => {
@@ -78,6 +85,7 @@ const AudioPlayer = () => {
 
   const knobMoved = () => {
     const progress = progressBarRef.current.value;
+    console.log(progressBarRef.current.value);
     audioPlayerRef.current.currentTime = progress;
     updatePlayerCurrentTime();
   };
@@ -85,33 +93,77 @@ const AudioPlayer = () => {
   return (
     <div className={styles.audioPlayer}>
       <audio ref={audioPlayerRef} src={audioFile} preload="metadata"></audio>
-      <button
-        className={styles.forwardBackward}
-        onClick={() => skipSeconds(-30)}
+
+      <Grid
+        container
+        direction="column"
+        justifyContent="center"
+        alignItems="stretch"
       >
-        <BsArrowLeftShort /> 30
-      </button>
-      <button onClick={togglePlayPause} className={styles.playPause}>
-        {isPlaying ? <FaPause /> : <FaPlay />}
-      </button>
-      <button
-        className={styles.forwardBackward}
-        onClick={() => skipSeconds(30)}
-      >
-        30
-        <BsArrowRightShort />
-      </button>
-      <div className={styles.currentTime}>{calculateTime(currentTime)}</div>
-      <div>
-        <input
-          ref={progressBarRef}
-          type="range"
-          className={styles.progressBar}
-          defaultValue="0"
-          onChange={knobMoved}
-        ></input>
-      </div>
-      <div className={styles.duration}>{calculateTime(duration)}</div>
+        <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="stretch"
+        >
+          <img
+            src="https://picsum.photos/id/1/200/300"
+            className={styles.coverImg}
+          ></img>
+        </Grid>
+        <Divider></Divider>
+        <Grid
+          container
+          direction="column"
+          justifyContent="center"
+          alignItems="stretch"
+        >
+          <Grid item xs={12}>
+            <Grid
+              container
+              direction="row"
+              justifyContent="space-between"
+              alignItems="stretch"
+            >
+              <button
+                className={styles.forwardBackward}
+                onClick={() => skipSeconds(-1)}
+              >
+                <Forward30Icon className={styles.flipped} />
+              </button>
+              <button onClick={togglePlayPause} className={styles.playPause}>
+                {isPlaying ? <FaPause /> : <FaPlay />}
+              </button>{" "}
+              <button
+                className={styles.forwardBackward}
+                onClick={() => skipSeconds(1)}
+              >
+                <Forward30Icon />
+              </button>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <input
+              ref={progressBarRef}
+              type="range"
+              className={styles.progressBar}
+              defaultValue="0"
+              onChange={knobMoved}
+            ></input>
+          </Grid>
+          <Grid
+            container
+            direction="row"
+            justifyContent="space-between"
+            alignItems="stretch"
+          >
+            <div className={styles.currentTime}>
+              {calculateTime(currentTime)}
+            </div>
+            <div className={styles.duration}>{calculateTime(duration)}</div>
+          </Grid>
+        </Grid>
+      </Grid>
     </div>
   );
 };

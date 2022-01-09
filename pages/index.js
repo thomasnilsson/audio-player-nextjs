@@ -2,6 +2,8 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { AudioPlayer } from "../components/AudioPlayer";
+import { Grid, Card, Paper, Box } from "@material-ui/core";
+import { styled } from "@mui/material/styles";
 
 export default function Home() {
   return (
@@ -13,10 +15,6 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">SOUNDCLOUT</a>
-        </h1>
-        <h2>gang shit</h2>
         <AudioPlayer />
       </main>
     </div>
